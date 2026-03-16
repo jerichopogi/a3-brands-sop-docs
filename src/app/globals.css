@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+:root {
+  --a3-green: #4CAF50;
+  --a3-green-dark: #388E3C;
+  --a3-green-light: #81C784;
+  --a3-gray: #9E9E9E;
+  --a3-gray-dark: #424242;
+  --a3-gray-light: #F5F5F5;
+  --a3-bg: #0f1117;
+  --a3-bg-secondary: #161922;
+  --a3-bg-card: #1c1f2e;
+  --a3-border: #2a2d3e;
+  --a3-text: #e4e4e7;
+  --a3-text-muted: #9ca3af;
+  --sidebar-width: 280px;
+}
+
+body {
+  background: var(--a3-bg);
+  color: var(--a3-text);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Code block styling */
+.code-block {
+  background: #1e1e2e;
+  border: 1px solid var(--a3-border);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--a3-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--a3-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--a3-gray);
+}
+
+/* Sidebar scroll */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: var(--a3-border);
+  border-radius: 2px;
+}
+
+/* Custom checkbox */
+.checklist-item input[type="checkbox"] {
+  accent-color: var(--a3-green);
+}
+
+/* ─── Rich Text Editor (TipTap) ─── */
+.rich-editor-content {
+  min-height: 150px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--a3-text);
+  outline: none;
+}
+
+.rich-editor-content p {
+  margin-bottom: 0.5em;
+}
+
+.rich-editor-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--a3-text-muted);
+  opacity: 0.5;
+  pointer-events: none;
+  height: 0;
+}
+
+.rich-editor-content h2 {
+  font-size: 1.4em;
+  font-weight: 700;
+  margin: 1em 0 0.4em;
+}
+
+.rich-editor-content h3 {
+  font-size: 1.15em;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+}
+
+.rich-editor-content h4 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0.6em 0 0.2em;
+}
+
+.rich-editor-content strong {
+  font-weight: 700;
+}
+
+.rich-editor-content em {
+  font-style: italic;
+}
+
+.rich-editor-content s {
+  text-decoration: line-through;
+}
+
+.rich-editor-content code {
+  background: var(--a3-bg-card);
+  border: 1px solid var(--a3-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.88em;
+}
+
+.rich-editor-content pre {
+  background: #1e1e2e;
+  border: 1px solid var(--a3-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0.8em 0;
+  overflow-x: auto;
+}
+
+.rich-editor-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #d4d4d4;
+}
+
+.rich-editor-content ul {
+  list-style: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.rich-editor-content ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+.rich-editor-content li {
+  margin: 0.2em 0;
+}
+
+.rich-editor-content blockquote {
+  border-left: 3px solid var(--a3-green);
+  padding-left: 16px;
+  margin: 0.8em 0;
+  color: var(--a3-text-muted);
+  font-style: italic;
+}
+
+.rich-editor-content a,
+.rich-editor-content .rich-link {
+  color: var(--a3-green);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.rich-editor-content img,
+.rich-editor-content .rich-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--a3-border);
+  margin: 0.8em 0;
+}
+
+.rich-editor-content hr {
+  border: none;
+  border-top: 1px solid var(--a3-border);
+  margin: 1.2em 0;
+}
+
+/* ─── Rich content in SOP detail view ─── */
+.rich-content h2 {
+  font-size: 1.3em;
+  font-weight: 700;
+  margin: 1em 0 0.4em;
+}
+
+.rich-content h3 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+}
+
+.rich-content p {
+  margin-bottom: 0.5em;
+  color: var(--a3-text-muted);
+  line-height: 1.7;
+}
+
+.rich-content strong {
+  font-weight: 700;
+  color: var(--a3-text);
+}
+
+.rich-content em {
+  font-style: italic;
+}
+
+.rich-content code {
+  background: var(--a3-bg-card);
+  border: 1px solid var(--a3-border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.88em;
+}
+
+.rich-content pre {
+  background: #1e1e2e;
+  border: 1px solid var(--a3-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0.8em 0;
+  overflow-x: auto;
+}
+
+.rich-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #d4d4d4;
+}
+
+.rich-content ul {
+  list-style: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+  color: var(--a3-text-muted);
+}
+
+.rich-content ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+  color: var(--a3-text-muted);
+}
+
+.rich-content li {
+  margin: 0.2em 0;
+}
+
+.rich-content blockquote {
+  border-left: 3px solid var(--a3-green);
+  padding-left: 16px;
+  margin: 0.8em 0;
+  color: var(--a3-text-muted);
+  font-style: italic;
+}
+
+.rich-content a {
+  color: var(--a3-green);
+  text-decoration: underline;
+}
+
+.rich-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--a3-border);
+  margin: 0.8em 0;
+}
