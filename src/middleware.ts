@@ -1,37 +1,33 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { COOKIE_NAME, decodeSession } from "@/lib/session";
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
+  const sessionValue = request.cookies.get(COOKIE_NAME)?.value;
+  const user = sessionValue ? decodeSession(sessionValue) : null;
 
-  await supabase.auth.getUser();
+  const isAuthed = user !== null;
+  const isAdmin = user?.role === "admin";
 
-  return supabaseResponse;
+  // Redirect logged-in users away from login page
+  if (isAuthed && pathname === "/login") {
+    return NextResponse.redirect(new URL("/sops", request.url));
+  }
+
+  // Protect /sops and /admin — redirect to login if not authed
+  if (!isAuthed && (pathname.startsWith("/sops") || pathname.startsWith("/admin"))) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Protect /admin — redirect non-admins to /sops
+  if (isAuthed && !isAdmin && pathname.startsWith("/admin")) {
+    return NextResponse.redirect(new URL("/sops", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };
