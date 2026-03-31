@@ -93,6 +93,7 @@ export function SOPProvider({ children }: { children: ReactNode }) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [sops, setSOPs] = useState<SOP[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [authed, setAuthed] = useState(false);
 
   const refreshSOPs = useCallback(async () => {
     setIsLoading(true);
@@ -100,14 +101,29 @@ export function SOPProvider({ children }: { children: ReactNode }) {
       fetch("/api/categories"),
       fetch("/api/sops"),
     ]);
+    if (!catsRes.ok || !sopsRes.ok) {
+      setIsLoading(false);
+      return;
+    }
     const [catsData, sopsData] = await Promise.all([catsRes.json(), sopsRes.json()]);
     setCategories(Array.isArray(catsData) ? catsData : []);
     setSOPs(Array.isArray(sopsData) ? sopsData.map(rowToSOP) : []);
     setIsLoading(false);
   }, []);
 
+  // Only fetch when user is authenticated
   useEffect(() => {
-    refreshSOPs();
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then(({ user }) => {
+        if (user) {
+          setAuthed(true);
+          refreshSOPs();
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch(() => setIsLoading(false));
   }, [refreshSOPs]);
 
   const addSOP = useCallback(
