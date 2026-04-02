@@ -19,6 +19,13 @@ export default function SOPDetailPage() {
   const router = useRouter();
   const sop = getSOP(params.id as string);
   const [editing, setEditing] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const handleCopy = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
 
   const handleSave = useCallback(async (html: string) => {
     if (!sop) return;
@@ -45,8 +52,13 @@ export default function SOPDetailPage() {
   if (!sop) {
     return (
       <div className="text-center py-20">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">SOP Not Found</h1>
-        <p className="text-gray-500 mb-4">The requested SOP does not exist.</p>
+        <svg className="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">SOP Not Found</h1>
+        <p className="text-gray-500 text-sm mb-6">
+          This document doesn&apos;t exist or you may not have access to it.
+        </p>
         <Link href="/sops" className="text-blue-600 hover:underline text-sm">&larr; Back to all SOPs</Link>
       </div>
     );
@@ -180,7 +192,12 @@ export default function SOPDetailPage() {
                   <div className="mb-4">
                     <div className="flex items-center justify-between bg-gray-800 border border-gray-700 rounded-t-lg px-4 py-2">
                       <span className="text-xs text-gray-400 font-mono">Example</span>
-                      <button onClick={() => navigator.clipboard.writeText(step.codeExample!)} className="text-xs text-gray-400 hover:text-white transition-colors">Copy</button>
+                      <button
+                        onClick={() => handleCopy(step.codeExample!, i)}
+                        className={`text-xs transition-colors ${copiedIndex === i ? "text-green-400" : "text-gray-400 hover:text-white"}`}
+                      >
+                        {copiedIndex === i ? "Copied!" : "Copy"}
+                      </button>
                     </div>
                     <pre className="bg-gray-900 border border-t-0 border-gray-700 rounded-b-lg p-4 overflow-x-auto">
                       <code className="text-sm font-mono text-gray-300 leading-relaxed whitespace-pre">{step.codeExample}</code>

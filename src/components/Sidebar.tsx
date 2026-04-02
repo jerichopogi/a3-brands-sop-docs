@@ -10,7 +10,7 @@ import { ROLE_LABELS } from "@/lib/roles";
 
 export default function Sidebar() {
   const { user, logout, isSuperuser } = useAuth();
-  const { categories, sops } = useSOPs();
+  const { categories, sops, isLoading } = useSOPs();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -56,32 +56,47 @@ export default function Sidebar() {
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-3 sidebar-scroll">
-          {categories.map((cat) => {
-            const catSOPs = sopsByCategory(cat.name);
-            if (catSOPs.length === 0) return null;
-            return (
-              <div key={cat.id} className="mb-1">
-                <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-4 py-2 mt-2 first:mt-0">
-                  {cat.name}
-                </h3>
-                <div className="space-y-0.5 px-2">
-                  {catSOPs.map((sop) => (
-                    <Link
-                      key={sop.id}
-                      href={`/sops/${sop.slug}`}
-                      className={`block px-3 py-1.5 rounded-lg text-[13px] leading-snug transition-colors ${
-                        isActive(sop.slug)
-                          ? "bg-blue-50 text-blue-600 font-medium"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                      }`}
-                    >
-                      {sop.title}
-                    </Link>
-                  ))}
+          {isLoading ? (
+            <div className="px-2 py-3 space-y-4">
+              {[1, 2, 3].map((g) => (
+                <div key={g}>
+                  <div className="h-3 bg-gray-200 rounded w-2/5 mx-2 mb-2 animate-pulse" />
+                  <div className="space-y-1">
+                    {[1, 2].map((i) => (
+                      <div key={i} className="h-7 bg-gray-100 rounded-lg mx-1 animate-pulse" />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              ))}
+            </div>
+          ) : (
+            categories.map((cat) => {
+              const catSOPs = sopsByCategory(cat.name);
+              if (catSOPs.length === 0) return null;
+              return (
+                <div key={cat.id} className="mb-1">
+                  <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-4 py-2 mt-2 first:mt-0">
+                    {cat.name}
+                  </h3>
+                  <div className="space-y-0.5 px-2">
+                    {catSOPs.map((sop) => (
+                      <Link
+                        key={sop.id}
+                        href={`/sops/${sop.slug}`}
+                        className={`block px-3 py-1.5 rounded-lg text-[13px] leading-snug transition-colors ${
+                          isActive(sop.slug)
+                            ? "bg-blue-50 text-blue-600 font-medium"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        }`}
+                      >
+                        {sop.title}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          )}
 
           {isSuperuser && (
             <div className="mb-1 mt-2 pt-3 mx-3 border-t border-[#E2E8F0]">
@@ -105,7 +120,7 @@ export default function Sidebar() {
         {/* User info */}
         <div className="p-4 border-t border-[#E2E8F0]">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0" title={`${user?.displayName ?? ""} — ${user?.role ? ROLE_LABELS[user.role] : ""}`}>
               <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-sm font-semibold flex-shrink-0">
                 {user?.displayName?.charAt(0) || "U"}
               </div>
