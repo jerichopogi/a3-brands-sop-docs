@@ -97,18 +97,18 @@ export function SOPProvider({ children }: { children: ReactNode }) {
 
   const refreshSOPs = useCallback(async () => {
     setIsLoading(true);
-    const [catsRes, sopsRes] = await Promise.all([
-      fetch("/api/categories"),
-      fetch("/api/sops"),
-    ]);
-    if (!catsRes.ok || !sopsRes.ok) {
+    try {
+      const [catsRes, sopsRes] = await Promise.all([
+        fetch("/api/categories"),
+        fetch("/api/sops"),
+      ]);
+      if (!catsRes.ok || !sopsRes.ok) return;
+      const [catsData, sopsData] = await Promise.all([catsRes.json(), sopsRes.json()]);
+      setCategories(Array.isArray(catsData) ? catsData : []);
+      setSOPs(Array.isArray(sopsData) ? sopsData.map(rowToSOP) : []);
+    } finally {
       setIsLoading(false);
-      return;
     }
-    const [catsData, sopsData] = await Promise.all([catsRes.json(), sopsRes.json()]);
-    setCategories(Array.isArray(catsData) ? catsData : []);
-    setSOPs(Array.isArray(sopsData) ? sopsData.map(rowToSOP) : []);
-    setIsLoading(false);
   }, []);
 
   // Only fetch when user is authenticated
