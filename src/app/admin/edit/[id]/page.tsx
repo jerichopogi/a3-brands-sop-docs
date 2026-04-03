@@ -169,7 +169,7 @@ export default function EditSOPPage() {
           <h1 className="text-2xl font-bold text-gray-900">{isNew ? "Create New SOP" : "Edit SOP"}</h1>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => router.push("/admin")} className="bg-white border border-[#E2E8F0] text-sm rounded-lg px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onClick={() => router.back()} className="bg-white border border-[#E2E8F0] text-sm rounded-lg px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
           <button onClick={handleSave} disabled={saving} className="bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-4 py-2.5 transition-colors">
             {saving ? "Saving..." : isNew ? "Create SOP" : "Save Changes"}
           </button>
@@ -305,7 +305,7 @@ export default function EditSOPPage() {
         </div>
 
         <div className="flex justify-end gap-2 pt-4">
-          <button onClick={() => router.push("/admin")} className="bg-white border border-[#E2E8F0] text-sm rounded-lg px-6 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+          <button onClick={() => router.back()} className="bg-white border border-[#E2E8F0] text-sm rounded-lg px-6 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
           <button onClick={handleSave} disabled={saving} className="bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-6 py-2.5 transition-colors">
             {saving ? "Saving..." : isNew ? "Create SOP" : "Save Changes"}
           </button>

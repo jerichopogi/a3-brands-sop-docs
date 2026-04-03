@@ -4,33 +4,13 @@ import { useSOPs } from "@/contexts/SOPContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useState, useCallback } from "react";
-import dynamic from "next/dynamic";
-
-const SOPContentEditor = dynamic(() => import("@/components/SOPContentEditor"), {
-  ssr: false,
-  loading: () => <div className="fixed inset-0 bg-white z-[100] flex items-center justify-center"><p className="text-gray-500">Loading editor...</p></div>,
-});
 
 export default function SOPDetailPage() {
-  const { getSOP, updateSOP, isLoading } = useSOPs();
+  const { getSOP, isLoading } = useSOPs();
   const { isSuperuser } = useAuth();
   const params = useParams();
   const router = useRouter();
   const sop = getSOP(params.id as string);
-  const [editing, setEditing] = useState(false);
-
-  const handleSave = useCallback(async (html: string) => {
-    if (!sop) return;
-    await fetch(`/api/sops/${sop.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content_html: html }),
-    });
-    // Refresh the SOP in context without page reload
-    await updateSOP(sop.id, { content_html: html });
-    setEditing(false);
-  }, [sop, updateSOP]);
 
   if (isLoading) {
     return (
@@ -52,17 +32,6 @@ export default function SOPDetailPage() {
     );
   }
 
-  // Show editor overlay
-  if (editing && sop.content_html !== null) {
-    return (
-      <SOPContentEditor
-        sopId={sop.id}
-        initialContent={sop.content_html}
-        onSave={handleSave}
-        onClose={() => setEditing(false)}
-      />
-    );
-  }
 
   const hasContentHtml = sop.content_html && sop.content_html.trim().length > 0;
 
@@ -85,7 +54,7 @@ export default function SOPDetailPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-3">{sop.title}</h1>
           {isSuperuser && (
             <button
-              onClick={() => setEditing(true)}
+              onClick={() => router.push(`/admin/edit/${sop.id}`)}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +177,7 @@ export default function SOPDetailPage() {
           <p className="text-lg">This SOP has no content yet.</p>
           {isSuperuser && (
             <button
-              onClick={() => setEditing(true)}
+              onClick={() => router.push(`/admin/edit/${sop.id}`)}
               className="mt-4 text-sm text-blue-600 hover:text-blue-700"
             >
               Click Edit to add content
