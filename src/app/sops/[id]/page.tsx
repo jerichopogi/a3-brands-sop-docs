@@ -4,6 +4,12 @@ import { useSOPs } from "@/contexts/SOPContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
+import dynamic from "next/dynamic";
+
+const SOPEditModal = dynamic(() => import("@/components/SOPEditModal"), {
+  ssr: false,
+});
 
 export default function SOPDetailPage() {
   const { getSOP, isLoading } = useSOPs();
@@ -11,6 +17,7 @@ export default function SOPDetailPage() {
   const params = useParams();
   const router = useRouter();
   const sop = getSOP(params.id as string);
+  const [editing, setEditing] = useState(false);
 
   if (isLoading) {
     return (
@@ -32,11 +39,18 @@ export default function SOPDetailPage() {
     );
   }
 
-
   const hasContentHtml = sop.content_html && sop.content_html.trim().length > 0;
 
   return (
     <>
+      {/* Edit Modal */}
+      {editing && (
+        <SOPEditModal
+          sopId={sop.id}
+          onClose={() => setEditing(false)}
+        />
+      )}
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <Link href="/sops" className="hover:text-blue-600 transition-colors">SOPs</Link>
@@ -54,7 +68,7 @@ export default function SOPDetailPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-3">{sop.title}</h1>
           {isSuperuser && (
             <button
-              onClick={() => router.push(`/admin/edit/${sop.id}`)}
+              onClick={() => setEditing(true)}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +191,7 @@ export default function SOPDetailPage() {
           <p className="text-lg">This SOP has no content yet.</p>
           {isSuperuser && (
             <button
-              onClick={() => router.push(`/admin/edit/${sop.id}`)}
+              onClick={() => setEditing(true)}
               className="mt-4 text-sm text-blue-600 hover:text-blue-700"
             >
               Click Edit to add content
