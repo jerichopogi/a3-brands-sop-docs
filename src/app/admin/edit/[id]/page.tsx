@@ -6,10 +6,11 @@ import { useState, useEffect } from "react";
 import type { SOPStep } from "@/types/database";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useToast } from "@/contexts/ToastContext";
 
 const RichTextEditor = dynamic(() => import("@/components/RichTextEditor"), {
   ssr: false,
-  loading: () => <div className="h-[150px] bg-gray-50 border border-[#E2E8F0] rounded-lg animate-pulse" />,
+  loading: () => <div className="h-[150px] bg-[var(--bg-hover)] border border-[var(--border)] rounded-lg animate-pulse" />,
 });
 
 function generateSlug(title: string) {
@@ -33,6 +34,7 @@ export default function EditSOPPage() {
   const params = useParams();
   const router = useRouter();
   const { sops, addSOP, updateSOP, categories, addCategory, isLoading } = useSOPs();
+  const { toast } = useToast();
   const isNew = params.id === "new";
   const existing = !isNew ? sops.find((s) => s.id === params.id) : undefined;
   const backUrl = existing ? `/sops/${existing.slug}` : "/sops";
@@ -160,6 +162,7 @@ export default function EditSOPPage() {
           steps: cleanedSteps,
           content_html: contentHtml || undefined,
         });
+        toast("SOP created successfully.");
         router.push(created ? `/sops/${created.slug}` : "/sops");
       } else {
         await updateSOP(params.id as string, {
@@ -171,17 +174,19 @@ export default function EditSOPPage() {
           steps: cleanedSteps,
           content_html: contentHtml || undefined,
         });
+        toast("SOP updated successfully.");
         router.push(backUrl);
       }
     } catch {
       setError("Failed to save SOP. Please try again.");
+      toast("Failed to save SOP.", "error");
       setSaving(false);
     }
   };
 
   const inputClass =
-    "w-full bg-white border border-[#E2E8F0] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors text-gray-900";
-  const labelClass = "block text-sm font-medium text-gray-700 mb-1.5";
+    "w-full bg-[var(--bg-input)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors text-[var(--text)]";
+  const labelClass = "block text-sm font-medium text-[var(--text-muted)] mb-1.5";
 
   // Show loading skeleton while SOP data is loading
   if (isLoading && !isNew) {
@@ -189,28 +194,28 @@ export default function EditSOPPage() {
       <div className="animate-pulse space-y-6">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <div className="h-4 bg-gray-200 rounded w-32 mb-2" />
-            <div className="h-8 bg-gray-200 rounded w-48" />
+            <div className="h-4 bg-[var(--border)] rounded w-32 mb-2" />
+            <div className="h-8 bg-[var(--border)] rounded w-48" />
           </div>
           <div className="flex gap-2">
-            <div className="h-10 bg-gray-200 rounded-lg w-20" />
-            <div className="h-10 bg-gray-200 rounded-lg w-32" />
+            <div className="h-10 bg-[var(--border)] rounded-lg w-20" />
+            <div className="h-10 bg-[var(--border)] rounded-lg w-32" />
           </div>
         </div>
-        <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 space-y-4">
-          <div className="h-5 bg-gray-200 rounded w-40 mb-4" />
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6 space-y-4">
+          <div className="h-5 bg-[var(--border)] rounded w-40 mb-4" />
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 h-10 bg-gray-100 rounded-lg" />
-            <div className="h-10 bg-gray-100 rounded-lg" />
-            <div className="h-10 bg-gray-100 rounded-lg" />
-            <div className="h-10 bg-gray-100 rounded-lg" />
-            <div className="h-10 bg-gray-100 rounded-lg" />
-            <div className="col-span-2 h-20 bg-gray-100 rounded-lg" />
+            <div className="col-span-2 h-10 bg-[var(--tag-bg)] rounded-lg" />
+            <div className="h-10 bg-[var(--tag-bg)] rounded-lg" />
+            <div className="h-10 bg-[var(--tag-bg)] rounded-lg" />
+            <div className="h-10 bg-[var(--tag-bg)] rounded-lg" />
+            <div className="h-10 bg-[var(--tag-bg)] rounded-lg" />
+            <div className="col-span-2 h-20 bg-[var(--tag-bg)] rounded-lg" />
           </div>
         </div>
-        <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
-          <div className="h-5 bg-gray-200 rounded w-24 mb-4" />
-          <div className="h-12 bg-gray-100 rounded-lg" />
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6">
+          <div className="h-5 bg-[var(--border)] rounded w-24 mb-4" />
+          <div className="h-12 bg-[var(--tag-bg)] rounded-lg" />
         </div>
       </div>
     );
@@ -220,29 +225,29 @@ export default function EditSOPPage() {
     <>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <nav className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-            <Link href={backUrl} className="hover:text-blue-600">{existing ? existing.title : "SOPs"}</Link>
+          <nav className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-2">
+            <Link href={backUrl} className="hover:text-[var(--primary)]">{existing ? existing.title : "SOPs"}</Link>
             <span>/</span>
-            <span className="text-gray-900">{isNew ? "New SOP" : "Edit"}</span>
+            <span className="text-[var(--text)]">{isNew ? "New SOP" : "Edit"}</span>
           </nav>
-          <h1 className="text-2xl font-bold text-gray-900">{isNew ? "Create New SOP" : "Edit SOP"}</h1>
+          <h1 className="text-2xl font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>{isNew ? "Create New SOP" : "Edit SOP"}</h1>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => router.push(backUrl)} className="bg-white border border-[#E2E8F0] text-sm rounded-lg px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-          <button onClick={handleSave} disabled={saving} className="bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-4 py-2.5 transition-colors">
+          <button onClick={() => router.push(backUrl)} className="bg-[var(--bg-card)] border border-[var(--border)] text-sm rounded-lg px-4 py-2.5 text-[var(--text)] hover:bg-[var(--bg-hover)] transition-colors">Cancel</button>
+          <button onClick={handleSave} disabled={saving} className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-4 py-2.5 transition-colors">
             {saving ? "Saving..." : isNew ? "Create SOP" : "Save Changes"}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">{error}</div>
+        <div className="mb-6 px-4 py-3 bg-[var(--danger-light)] border border-[var(--danger)] rounded-lg text-sm text-[var(--danger-text)]">{error}</div>
       )}
 
       <div className="space-y-6">
         {/* Basic Info */}
-        <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-[var(--text)] mb-4">Basic Information</h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className={labelClass}>Title</label>
@@ -278,9 +283,9 @@ export default function EditSOPPage() {
 
         {/* Content HTML (for AI-generated SOPs) */}
         {hasContentHtml && (
-          <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Content</h2>
-            <p className="text-xs text-gray-500 mb-4">This SOP uses rich HTML content (e.g. generated from a PDF upload).</p>
+          <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-[var(--text)] mb-1">Content</h2>
+            <p className="text-xs text-[var(--text-muted)] mb-4">This SOP uses rich HTML content (e.g. generated from a PDF upload).</p>
             <RichTextEditor
               content={contentHtml}
               onChange={setContentHtml}
@@ -292,33 +297,33 @@ export default function EditSOPPage() {
         {/* Steps */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Steps</h2>
-            <button onClick={addStep} className="text-xs bg-blue-50 text-blue-600 rounded-lg px-3 py-1.5 hover:bg-blue-100 transition-colors font-medium">+ Add Step</button>
+            <h2 className="text-lg font-semibold text-[var(--text)]">Steps</h2>
+            <button onClick={addStep} className="text-xs bg-[var(--primary-light)] text-[var(--primary)] rounded-lg px-3 py-1.5 hover:bg-[var(--primary-light)] transition-colors font-medium">+ Add Step</button>
           </div>
 
           {steps.map((step, i) => {
             const isExpanded = expandedSteps.has(i);
             return (
-              <div key={i} className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+              <div key={i} className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl overflow-hidden">
                 <div
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-[var(--bg-hover)] transition-colors"
                   onClick={() => toggleStep(i)}
                 >
                   <h3 className="font-semibold flex items-center gap-2">
-                    <span className="w-6 h-6 rounded bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-bold">{i + 1}</span>
-                    <span className="text-sm text-gray-900">{step.title || `Step ${i + 1}`}</span>
+                    <span className="w-6 h-6 rounded bg-[var(--primary-light)] text-[var(--primary)] flex items-center justify-center text-xs font-bold">{i + 1}</span>
+                    <span className="text-sm text-[var(--text)]">{step.title || `Step ${i + 1}`}</span>
                   </h3>
                   <div className="flex items-center gap-2">
                     {steps.length > 1 && (
                       <button
                         onClick={(e) => { e.stopPropagation(); removeStep(i); }}
-                        className="text-xs text-red-500 hover:text-red-600 transition-colors px-2 py-1"
+                        className="text-xs text-[var(--danger)] hover:text-[var(--danger)] transition-colors px-2 py-1"
                       >
                         Remove
                       </button>
                     )}
                     <svg
-                      className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                      className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${isExpanded ? "rotate-180" : ""}`}
                       fill="none" stroke="currentColor" viewBox="0 0 24 24"
                     >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -327,7 +332,7 @@ export default function EditSOPPage() {
                 </div>
 
                 {isExpanded && (
-                  <div className="px-6 pb-6 space-y-4 border-t border-[#E2E8F0]">
+                  <div className="px-6 pb-6 space-y-4 border-t border-[var(--border)]">
                     <div className="pt-4">
                       <label className={labelClass}>Step Title</label>
                       <input type="text" value={step.title} onChange={(e) => updateStep(i, "title", e.target.value)} className={inputClass} placeholder="Step title" />
@@ -340,7 +345,7 @@ export default function EditSOPPage() {
                     <div>
                       <label className={labelClass}>
                         Rich Content
-                        <span className="text-gray-500 font-normal ml-2 text-xs">(screenshots, formatted text, images)</span>
+                        <span className="text-[var(--text-muted)] font-normal ml-2 text-xs">(screenshots, formatted text, images)</span>
                       </label>
                       <RichTextEditor
                         content={step.richContent || ""}
@@ -352,13 +357,13 @@ export default function EditSOPPage() {
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <label className={labelClass}>Substeps</label>
-                        <button onClick={() => addSubstep(i)} className="text-xs text-blue-600 hover:text-blue-700 font-medium">+ Add</button>
+                        <button onClick={() => addSubstep(i)} className="text-xs text-[var(--primary)] hover:text-[var(--primary)] font-medium">+ Add</button>
                       </div>
                       {(step.substeps || []).map((sub, j) => (
                         <div key={j} className="flex gap-2 mb-2">
                           <input type="text" value={sub} onChange={(e) => updateSubstep(i, j, e.target.value)} className={`${inputClass} flex-1`} placeholder={`Substep ${j + 1}`} />
                           {(step.substeps || []).length > 1 && (
-                            <button onClick={() => removeSubstep(i, j)} className="text-xs text-red-500 hover:text-red-600 px-2">x</button>
+                            <button onClick={() => removeSubstep(i, j)} className="text-xs text-[var(--danger)] hover:text-[var(--danger)] px-2">x</button>
                           )}
                         </div>
                       ))}
@@ -381,8 +386,8 @@ export default function EditSOPPage() {
         </div>
 
         <div className="flex justify-end gap-2 pt-4">
-          <button onClick={() => router.push(backUrl)} className="bg-white border border-[#E2E8F0] text-sm rounded-lg px-6 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
-          <button onClick={handleSave} disabled={saving} className="bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-6 py-2.5 transition-colors">
+          <button onClick={() => router.push(backUrl)} className="bg-[var(--bg-card)] border border-[var(--border)] text-sm rounded-lg px-6 py-2.5 text-[var(--text)] hover:bg-[var(--bg-hover)] transition-colors">Cancel</button>
+          <button onClick={handleSave} disabled={saving} className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-6 py-2.5 transition-colors">
             {saving ? "Saving..." : isNew ? "Create SOP" : "Save Changes"}
           </button>
         </div>

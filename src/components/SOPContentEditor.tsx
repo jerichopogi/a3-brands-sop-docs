@@ -75,26 +75,26 @@ export default function SOPContentEditor({
   const btnClass = (active: boolean) =>
     `p-1.5 rounded transition-colors ${
       active
-        ? "bg-blue-100 text-blue-600"
-        : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+        ? "bg-[var(--primary-light)] text-[var(--primary)]"
+        : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-hover)]"
     }`;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-white">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[var(--bg)]">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white">
-        <h2 className="text-lg font-semibold text-gray-900">Edit SOP Content</h2>
+      <div className="flex items-center justify-between px-6 py-3 border-b border-[var(--border)] bg-[var(--bg-card)]">
+        <h2 className="text-lg font-semibold text-[var(--text)]">Edit SOP Content</h2>
         <div className="flex items-center gap-3">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)] rounded-lg transition-colors"
           >
             Discard
           </button>
           <button
             onClick={handleSave}
             disabled={saving || !hasChanges}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 rounded-lg transition-colors"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
@@ -102,7 +102,7 @@ export default function SOPContentEditor({
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-6 py-2 border-b border-gray-200 bg-gray-50 flex-wrap">
+      <div className="flex items-center gap-0.5 px-6 py-2 border-b border-[var(--border)] bg-[var(--bg-hover)] flex-wrap">
         <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={btnClass(editor.isActive("heading", { level: 1 }))} title="Heading 1">
           <span className="text-xs font-bold w-5 h-5 flex items-center justify-center">H1</span>
         </button>
@@ -113,7 +113,7 @@ export default function SOPContentEditor({
           <span className="text-xs font-bold w-5 h-5 flex items-center justify-center">H3</span>
         </button>
 
-        <div className="w-px h-5 bg-gray-300 mx-1" />
+        <div className="w-px h-5 bg-[var(--border)] mx-1" />
 
         <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btnClass(editor.isActive("bold"))} title="Bold">
           <span className="text-sm font-bold w-5 h-5 flex items-center justify-center">B</span>
@@ -122,7 +122,7 @@ export default function SOPContentEditor({
           <span className="text-sm italic w-5 h-5 flex items-center justify-center">I</span>
         </button>
 
-        <div className="w-px h-5 bg-gray-300 mx-1" />
+        <div className="w-px h-5 bg-[var(--border)] mx-1" />
 
         <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btnClass(editor.isActive("bulletList"))} title="Bullet List">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z" /></svg>
@@ -131,7 +131,7 @@ export default function SOPContentEditor({
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z" /></svg>
         </button>
 
-        <div className="w-px h-5 bg-gray-300 mx-1" />
+        <div className="w-px h-5 bg-[var(--border)] mx-1" />
 
         <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={btnClass(editor.isActive("codeBlock"))} title="Code Block">
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" /></svg>
@@ -154,20 +154,20 @@ export default function SOPContentEditor({
       {/* Discard confirmation modal */}
       {showDiscardModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowDiscardModal(false)} />
-          <div className="relative bg-white rounded-xl shadow-xl p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Discard unsaved changes?</h3>
-            <p className="text-sm text-gray-600 mb-6">Your changes will be lost if you close the editor without saving.</p>
+          <div className="absolute inset-0 bg-[var(--modal-overlay)]" onClick={() => setShowDiscardModal(false)} />
+          <div className="relative bg-[var(--bg-card)] rounded-xl shadow-xl p-6 max-w-sm mx-4">
+            <h3 className="text-lg font-semibold text-[var(--text)] mb-2">Discard unsaved changes?</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-6">Your changes will be lost if you close the editor without saving.</p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDiscardModal(false)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               >
                 Keep Editing
               </button>
               <button
                 onClick={() => { setShowDiscardModal(false); onClose(); }}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-[var(--danger)] hover:bg-[var(--danger-hover)] rounded-lg transition-colors"
               >
                 Discard
               </button>

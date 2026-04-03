@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
+/* ─── Toast animation ─── */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-slide-in {
+  animation: slide-in 0.25s ease-out;
+}
+
+/* ─── Light Mode ─── */
 :root {
-  --primary: #2563EB;
-  --primary-hover: #1D4ED8;
-  --primary-light: #EFF6FF;
-  --bg: #F8FAFC;
+  --primary: #5a9e3a;
+  --primary-hover: #4a8a2f;
+  --primary-light: #f0f7ec;
+  --primary-foreground: #ffffff;
+
+  --bg: #F5F5F5;
   --bg-card: #FFFFFF;
-  --border: #E2E8F0;
-  --text: #0F172A;
-  --text-muted: #64748B;
+  --bg-elevated: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-hover: #f0f0f0;
+
+  --text: #212121;
+  --text-muted: #6B7280;
+  --text-heading: #212121;
+
+  --border: #E5E7EB;
+  --border-focus: #5a9e3a;
+
+  --sidebar-bg: #f0f0f0;
+  --sidebar-text: #212121;
+  --sidebar-text-muted: #6B7280;
+  --sidebar-border: #E0E0E0;
+  --sidebar-active-bg: rgba(90, 158, 58, 0.12);
+  --sidebar-active-text: #3d7a25;
+  --sidebar-hover-bg: rgba(0, 0, 0, 0.04);
+
+  --tag-bg: #f3f4f6;
+  --tag-text: #6B7280;
+
+  --danger: #DC2626;
+  --danger-hover: #B91C1C;
+  --danger-light: #FEF2F2;
+  --danger-text: #DC2626;
+
+  --warning-bg: #FFFBEB;
+  --warning-border: #F59E0B;
+  --warning-text: #92400E;
+
+  --info-bg: #f0f7ec;
+  --info-border: #5a9e3a;
+  --info-text: #2d5a1a;
+
+  --code-inline-bg: #F1F5F9;
+  --code-block-bg: #1e293b;
+  --code-text: #e2e8f0;
+
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+
   --sidebar-width: 240px;
+
+  --font-heading: 'Sora', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Dark Mode ─── */
+.dark {
+  --primary: #5ea33f;
+  --primary-hover: #6db84e;
+  --primary-light: rgba(94, 163, 63, 0.12);
+  --primary-foreground: #ffffff;
+
+  --bg: #0f0f0f;
+  --bg-card: #1E1E1E;
+  --bg-elevated: #252525;
+  --bg-input: #1E1E1E;
+  --bg-hover: #2a2a2a;
+
+  --text: #E5E5E5;
+  --text-muted: #9CA3AF;
+  --text-heading: #F5F5F5;
+
+  --border: #2D2D2D;
+  --border-focus: #5ea33f;
+
+  --sidebar-bg: #0a0a0a;
+  --sidebar-text: #E5E5E5;
+  --sidebar-text-muted: #6B7280;
+  --sidebar-border: #1a1a1a;
+  --sidebar-active-bg: rgba(94, 163, 63, 0.2);
+  --sidebar-active-text: #7dcc62;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+
+  --tag-bg: #2D2D2D;
+  --tag-text: #9CA3AF;
+
+  --danger: #EF4444;
+  --danger-hover: #DC2626;
+  --danger-light: rgba(239, 68, 68, 0.1);
+  --danger-text: #EF4444;
+
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-border: #F59E0B;
+  --warning-text: #FCD34D;
+
+  --info-bg: rgba(94, 163, 63, 0.1);
+  --info-border: #5ea33f;
+  --info-text: #7dcc62;
+
+  --code-inline-bg: #2D2D2D;
+  --code-block-bg: #0a0a0a;
+  --code-text: #e2e8f0;
+
+  --modal-overlay: rgba(0, 0, 0, 0.7);
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Code block styling */
+/* ─── Code block styling ─── */
 .code-block {
-  background: #1e293b;
+  background: var(--code-block-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
@@ -30,7 +141,7 @@ body {
   overflow-x: auto;
 }
 
-/* Scrollbar */
+/* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -39,11 +150,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--text-muted);
 }
 
 /* Sidebar scroll */
@@ -54,11 +165,12 @@ body {
   background: transparent;
 }
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: #E2E8F0;
+  background: var(--sidebar-text-muted);
   border-radius: 2px;
+  opacity: 0.5;
 }
 
-/* Custom checkbox */
+/* ─── Custom checkbox ─── */
 .checklist-item input[type="checkbox"] {
   accent-color: var(--primary);
 }
@@ -90,28 +202,33 @@ body {
   font-size: 1.75em;
   font-weight: 800;
   margin: 1em 0 0.5em;
+  color: var(--text-heading);
 }
 
 .rich-editor-content h2 {
   font-size: 1.4em;
   font-weight: 700;
   margin: 1em 0 0.4em;
+  color: var(--text-heading);
 }
 
 .rich-editor-content h3 {
   font-size: 1.15em;
   font-weight: 600;
   margin: 0.8em 0 0.3em;
+  color: var(--text-heading);
 }
 
 .rich-editor-content h4 {
   font-size: 1em;
   font-weight: 600;
   margin: 0.6em 0 0.2em;
+  color: var(--text-heading);
 }
 
 .rich-editor-content strong {
   font-weight: 700;
+  color: var(--text-heading);
 }
 
 .rich-editor-content em {
@@ -123,7 +240,7 @@ body {
 }
 
 .rich-editor-content code {
-  background: #F1F5F9;
+  background: var(--code-inline-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 6px;
@@ -132,7 +249,7 @@ body {
 }
 
 .rich-editor-content pre {
-  background: #1e293b;
+  background: var(--code-block-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
@@ -146,7 +263,7 @@ body {
   padding: 0;
   font-size: 13px;
   line-height: 1.6;
-  color: #e2e8f0;
+  color: var(--code-text);
 }
 
 .rich-editor-content ul {
@@ -200,21 +317,21 @@ body {
   font-size: 1.75em;
   font-weight: 800;
   margin: 0 0 0.5em;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .sop-content h2 {
   font-size: 1.3em;
   font-weight: 700;
   margin: 1.5em 0 0.4em;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .sop-content h3 {
   font-size: 1.1em;
   font-weight: 600;
   margin: 1em 0 0.3em;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .sop-content p {
@@ -225,7 +342,7 @@ body {
 
 .sop-content strong {
   font-weight: 700;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .sop-content em {
@@ -233,7 +350,7 @@ body {
 }
 
 .sop-content code {
-  background: #F1F5F9;
+  background: var(--code-inline-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 6px;
@@ -242,7 +359,7 @@ body {
 }
 
 .sop-content pre {
-  background: #1e293b;
+  background: var(--code-block-bg);
   border-radius: 8px;
   padding: 16px;
   margin: 0.8em 0;
@@ -255,7 +372,7 @@ body {
   padding: 0;
   font-size: 13px;
   line-height: 1.6;
-  color: #e2e8f0;
+  color: var(--code-text);
 }
 
 .sop-content ul {
@@ -288,15 +405,15 @@ body {
 }
 
 .sop-content blockquote.warning {
-  border-left-color: #F59E0B;
-  background: #FFFBEB;
-  color: #92400E;
+  border-left-color: var(--warning-border);
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }
 
 .sop-content blockquote.note {
-  border-left-color: var(--primary);
-  background: var(--primary-light);
-  color: #1E40AF;
+  border-left-color: var(--info-border);
+  background: var(--info-bg);
+  color: var(--info-text);
 }
 
 .sop-content a {
@@ -312,19 +429,19 @@ body {
   margin: 0.8em 0;
 }
 
-/* ─── Rich content in SOP detail view (legacy) ─── */
+/* ─── Rich content in SOP detail view ─── */
 .rich-content h2 {
   font-size: 1.3em;
   font-weight: 700;
   margin: 1em 0 0.4em;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .rich-content h3 {
   font-size: 1.1em;
   font-weight: 600;
   margin: 0.8em 0 0.3em;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .rich-content p {
@@ -335,7 +452,7 @@ body {
 
 .rich-content strong {
   font-weight: 700;
-  color: var(--text);
+  color: var(--text-heading);
 }
 
 .rich-content em {
@@ -343,7 +460,7 @@ body {
 }
 
 .rich-content code {
-  background: #F1F5F9;
+  background: var(--code-inline-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 1px 6px;
@@ -352,7 +469,7 @@ body {
 }
 
 .rich-content pre {
-  background: #1e293b;
+  background: var(--code-block-bg);
   border-radius: 8px;
   padding: 16px;
   margin: 0.8em 0;
@@ -365,7 +482,7 @@ body {
   padding: 0;
   font-size: 13px;
   line-height: 1.6;
-  color: #e2e8f0;
+  color: var(--code-text);
 }
 
 .rich-content ul {

@@ -21,8 +21,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <div className="text-gray-500 text-sm">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
+        <div className="text-[var(--text-muted)] text-sm">Loading...</div>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!user || !isSuperuser) return null;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[var(--bg)]">
       <Sidebar />
       <main className="ml-[240px] min-h-screen">
         <div className="max-w-5xl mx-auto px-8 py-8">{children}</div>

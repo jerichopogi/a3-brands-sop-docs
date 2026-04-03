@@ -7,12 +7,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ROLE_LABELS } from "@/lib/roles";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Sidebar() {
   const { user, logout, isSuperuser } = useAuth();
   const { categories, sops, isLoading } = useSOPs();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { resolvedTheme } = useTheme();
 
   const sopsByCategory = (catName: string) =>
     sops.filter((s) => s.category_name === catName);
@@ -21,13 +23,13 @@ export default function Sidebar() {
 
   if (collapsed) {
     return (
-      <aside className="fixed left-0 top-0 bottom-0 w-[52px] bg-white border-r border-[#E2E8F0] flex flex-col z-50">
+      <aside className="fixed left-0 top-0 bottom-0 w-[52px] bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] flex flex-col z-50">
         <button
           onClick={() => setCollapsed(false)}
-          className="p-3 hover:bg-gray-50 transition-colors"
+          className="p-3 hover:bg-[var(--sidebar-hover-bg)] transition-colors"
           title="Expand sidebar"
         >
-          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-[var(--sidebar-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
           </svg>
         </button>
@@ -37,18 +39,18 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className="fixed left-0 top-0 bottom-0 w-[240px] bg-white border-r border-[#E2E8F0] flex flex-col z-50">
+      <aside className="fixed left-0 top-0 bottom-0 w-[240px] bg-[var(--sidebar-bg)] border-r border-[var(--sidebar-border)] flex flex-col z-50">
         {/* Header */}
-        <div className="px-4 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+        <div className="px-4 py-4 border-b border-[var(--sidebar-border)] flex items-center justify-between">
           <Link href="/sops" className="flex items-center gap-2">
-            <Logo size="sm" />
+            <Logo size="sm" variant={resolvedTheme === "dark" ? "dark" : "light"} />
           </Link>
           <button
             onClick={() => setCollapsed(true)}
-            className="p-1 rounded hover:bg-gray-100 transition-colors"
+            className="p-1 rounded hover:bg-[var(--sidebar-hover-bg)] transition-colors"
             title="Collapse sidebar"
           >
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-[var(--sidebar-text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
             </svg>
           </button>
@@ -60,10 +62,10 @@ export default function Sidebar() {
             <div className="px-2 py-3 space-y-4">
               {[1, 2, 3].map((g) => (
                 <div key={g}>
-                  <div className="h-3 bg-gray-200 rounded w-2/5 mx-2 mb-2 animate-pulse" />
+                  <div className="h-3 bg-[var(--sidebar-border)] rounded w-2/5 mx-2 mb-2 animate-pulse" />
                   <div className="space-y-1">
                     {[1, 2].map((i) => (
-                      <div key={i} className="h-7 bg-gray-100 rounded-lg mx-1 animate-pulse" />
+                      <div key={i} className="h-7 bg-[var(--sidebar-border)] rounded-lg mx-1 animate-pulse opacity-50" />
                     ))}
                   </div>
                 </div>
@@ -75,7 +77,7 @@ export default function Sidebar() {
               if (catSOPs.length === 0) return null;
               return (
                 <div key={cat.id} className="mb-1">
-                  <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-4 py-2 mt-2 first:mt-0">
+                  <h3 className="text-[11px] font-semibold text-[var(--sidebar-text-muted)] uppercase tracking-wider px-4 py-2 mt-2 first:mt-0">
                     {cat.name}
                   </h3>
                   <div className="space-y-0.5 px-2">
@@ -85,8 +87,8 @@ export default function Sidebar() {
                         href={`/sops/${sop.slug}`}
                         className={`block px-3 py-1.5 rounded-lg text-[13px] leading-snug transition-colors ${
                           isActive(sop.slug)
-                            ? "bg-blue-50 text-blue-600 font-medium"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                            ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-text)] font-medium"
+                            : "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover-bg)]"
                         }`}
                       >
                         {sop.title}
@@ -99,13 +101,13 @@ export default function Sidebar() {
           )}
 
           {isSuperuser && (
-            <div className="mb-1 mt-2 pt-3 mx-3 border-t border-[#E2E8F0]">
+            <div className="mb-4 mt-3 pt-4 mx-3 border-t border-[var(--sidebar-border)]">
               <Link
                 href="/admin"
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                   pathname.startsWith("/admin")
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-text)]"
+                    : "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover-bg)]"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,20 +120,20 @@ export default function Sidebar() {
         </nav>
 
         {/* User info */}
-        <div className="p-4 border-t border-[#E2E8F0]">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0" title={`${user?.displayName ?? ""} — ${user?.role ? ROLE_LABELS[user.role] : ""}`}>
-              <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-sm font-semibold flex-shrink-0">
+        <div className="px-4 py-5 border-t border-[var(--sidebar-border)]">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0" title={`${user?.displayName ?? ""} — ${user?.role ? ROLE_LABELS[user.role] : ""}`}>
+              <div className="w-9 h-9 rounded-full bg-[var(--sidebar-active-bg)] flex items-center justify-center text-[var(--sidebar-active-text)] text-sm font-semibold flex-shrink-0">
                 {user?.displayName?.charAt(0) || "U"}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.displayName}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.role ? ROLE_LABELS[user.role] : ""}</p>
+                <p className="text-sm font-medium text-[var(--sidebar-text)] truncate">{user?.displayName}</p>
+                <p className="text-xs text-[var(--sidebar-text-muted)] truncate">{user?.role ? ROLE_LABELS[user.role] : ""}</p>
               </div>
             </div>
             <button
               onClick={() => logout()}
-              className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+              className="p-1.5 rounded-lg text-[var(--sidebar-text-muted)] hover:text-red-400 hover:bg-[var(--sidebar-hover-bg)] transition-colors flex-shrink-0"
               title="Logout"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +144,7 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile overlay - hidden on md+ */}
+      {/* Mobile overlay */}
       <div className="md:hidden fixed inset-0 bg-black/30 z-40" onClick={() => setCollapsed(true)} />
     </>
   );

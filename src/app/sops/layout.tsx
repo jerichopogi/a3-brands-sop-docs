@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "@/components/Sidebar";
+import ThemeToggle from "@/components/ThemeToggle";
 import { ROLE_LABELS } from "@/lib/roles";
 import dynamic from "next/dynamic";
 import { useSOPs } from "@/contexts/SOPContext";
@@ -22,6 +23,7 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const filteredResults = headerSearch.trim()
     ? sops
@@ -48,6 +50,18 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Ctrl+K / Cmd+K to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -95,8 +109,8 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <div className="text-gray-500 text-sm">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
+        <div className="text-[var(--text-muted)] text-sm">Loading...</div>
       </div>
     );
   }
@@ -104,7 +118,7 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[var(--bg)]">
       {/* Sidebar - hidden on mobile */}
       <div className="hidden md:block">
         <Sidebar />
@@ -113,14 +127,14 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="md:ml-[240px] min-h-screen">
         {/* Top bar */}
-        <header className="sticky top-0 z-30 bg-white border-b border-[#E2E8F0] px-6 py-3">
+        <header className="sticky top-0 z-30 bg-[var(--bg-card)] border-b border-[var(--border)] px-6 py-3">
           <div className="flex items-center justify-between max-w-5xl mx-auto">
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100"
+              className="md:hidden p-2 -ml-2 rounded-lg hover:bg-[var(--bg-hover)]"
             >
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -128,23 +142,24 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
             {/* Search */}
             <div className="flex-1 max-w-md mx-4" ref={searchContainerRef}>
               <div className="relative">
-                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={headerSearch}
                   onChange={handleSearchChange}
                   onKeyDown={handleSearchKeyDown}
                   onFocus={() => headerSearch.trim() && setShowDropdown(true)}
-                  placeholder="Search SOPs..."
-                  className="w-full bg-gray-50 border border-[#E2E8F0] rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                  placeholder="Search SOPs... (Ctrl+K)"
+                  className="w-full bg-[var(--bg-hover)] border border-[var(--border)] rounded-lg pl-10 pr-4 py-2 text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors"
                   autoComplete="off"
                 />
 
                 {/* Dropdown */}
                 {showDropdown && headerSearch.trim() && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#E2E8F0] rounded-xl shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-lg z-50 overflow-hidden">
                     {filteredResults.length > 0 ? (
                       <>
                         <ul>
@@ -152,30 +167,30 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
                             <li key={sop.id}>
                               <button
                                 onClick={() => handleResultClick(sop.slug)}
-                                className={`w-full text-left px-4 py-3 transition-colors border-b border-[#F1F5F9] last:border-0 ${
+                                className={`w-full text-left px-4 py-3 transition-colors border-b border-[var(--border)] last:border-0 ${
                                   i === activeIndex
-                                    ? "bg-blue-50"
-                                    : "hover:bg-gray-50"
+                                    ? "bg-[var(--primary-light)]"
+                                    : "hover:bg-[var(--bg-hover)]"
                                 }`}
                               >
-                                <p className="text-sm font-medium text-gray-900 truncate">{sop.title}</p>
-                                <p className="text-xs text-gray-500 truncate mt-0.5">{sop.description}</p>
-                                <span className="text-xs text-blue-400 mt-0.5 inline-block">{sop.category_name}</span>
+                                <p className="text-sm font-medium text-[var(--text)] truncate">{sop.title}</p>
+                                <p className="text-xs text-[var(--text-muted)] truncate mt-0.5">{sop.description}</p>
+                                <span className="text-xs text-[var(--primary)] mt-0.5 inline-block">{sop.category_name}</span>
                               </button>
                             </li>
                           ))}
                         </ul>
-                        <div className="border-t border-[#E2E8F0] px-4 py-2 bg-gray-50">
+                        <div className="border-t border-[var(--border)] px-4 py-2 bg-[var(--bg-hover)]">
                           <button
                             onClick={handleViewAll}
-                            className="text-xs text-[#2563EB] hover:underline font-medium"
+                            className="text-xs text-[var(--primary)] hover:underline font-medium"
                           >
                             See all results for &ldquo;{headerSearch}&rdquo; →
                           </button>
                         </div>
                       </>
                     ) : (
-                      <div className="px-4 py-4 text-sm text-gray-500 text-center">
+                      <div className="px-4 py-4 text-sm text-[var(--text-muted)] text-center">
                         No results for &ldquo;{headerSearch}&rdquo;
                       </div>
                     )}
@@ -185,12 +200,12 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Right side */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {isSuperuser && (
                 <div className="relative" ref={newMenuRef}>
                   <button
                     onClick={() => setShowNewMenu((prev) => !prev)}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[#2563EB] hover:bg-[#1D4ED8] rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-hover)] rounded-lg transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -201,29 +216,29 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
                     </svg>
                   </button>
                   {showNewMenu && (
-                    <div className="absolute right-0 mt-1 w-52 bg-white border border-[#E2E8F0] rounded-xl shadow-lg z-50 overflow-hidden">
+                    <div className="absolute right-0 mt-1 w-52 bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-lg z-50 overflow-hidden">
                       <button
                         onClick={() => { setShowNewMenu(false); router.push("/admin/edit/new"); }}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-[#F1F5F9] flex items-center gap-3"
+                        className="w-full text-left px-4 py-3 hover:bg-[var(--bg-hover)] transition-colors border-b border-[var(--border)] flex items-center gap-3"
                       >
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Create Manually</p>
-                          <p className="text-xs text-gray-500">Build SOP from scratch</p>
+                          <p className="text-sm font-medium text-[var(--text)]">Create Manually</p>
+                          <p className="text-xs text-[var(--text-muted)]">Build SOP from scratch</p>
                         </div>
                       </button>
                       <button
                         onClick={() => { setShowNewMenu(false); setShowUpload(true); }}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                        className="w-full text-left px-4 py-3 hover:bg-[var(--bg-hover)] transition-colors flex items-center gap-3"
                       >
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <div>
-                          <p className="text-sm font-medium text-gray-900">Upload PDF</p>
-                          <p className="text-xs text-gray-500">AI generates SOP from PDF</p>
+                          <p className="text-sm font-medium text-[var(--text)]">Upload PDF</p>
+                          <p className="text-xs text-[var(--text-muted)]">AI generates SOP from PDF</p>
                         </div>
                       </button>
                     </div>
@@ -231,20 +246,22 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
                 </div>
               )}
 
+              <ThemeToggle />
+
               {/* User avatar + role badge */}
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-sm font-semibold">
+                <div className="w-8 h-8 rounded-full bg-[var(--primary-light)] flex items-center justify-center text-[var(--primary)] text-sm font-semibold">
                   {user.displayName.charAt(0)}
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium text-gray-900 leading-tight">{user.displayName}</p>
-                  <p className="text-xs text-gray-500 leading-tight">{ROLE_LABELS[user.role]}</p>
+                  <p className="text-sm font-medium text-[var(--text)] leading-tight">{user.displayName}</p>
+                  <p className="text-xs text-[var(--text-muted)] leading-tight">{ROLE_LABELS[user.role]}</p>
                 </div>
               </div>
 
               <button
                 onClick={() => logout()}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-2 text-[var(--text-muted)] hover:text-red-500 transition-colors"
                 title="Logout"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +286,7 @@ export default function SOPLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setMobileMenuOpen(false)} />
+          <div className="absolute inset-0 bg-[var(--modal-overlay)]" onClick={() => setMobileMenuOpen(false)} />
           <div className="relative w-[240px] h-full">
             <Sidebar />
           </div>

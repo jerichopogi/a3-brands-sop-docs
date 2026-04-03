@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SOPProvider } from "@/contexts/SOPContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 export const metadata: Metadata = {
   title: "A3 Brands - Knowledge Base",
@@ -10,16 +12,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add('dark')}catch(e){}})();` }} />
       </head>
-      <body className="antialiased bg-[#F8FAFC] text-[#0F172A]">
-        <AuthProvider>
-          <SOPProvider>{children}</SOPProvider>
-        </AuthProvider>
+      <body className="antialiased">
+        <ThemeProvider>
+          <AuthProvider>
+            <SOPProvider>
+              <ToastProvider>{children}</ToastProvider>
+            </SOPProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
