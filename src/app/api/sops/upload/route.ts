@@ -3,7 +3,7 @@ import { requireSuperuser } from "@/lib/auth-guard";
 import { createServerClient } from "@/lib/supabase-server";
 import { logAudit } from "@/lib/audit";
 import Anthropic from "@anthropic-ai/sdk";
-import { PDFParse } from "pdf-parse";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
@@ -46,11 +46,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Only PDF files are accepted." }, { status: 400 });
     }
 
-    // Extract text from PDF using pdf-parse v2
+    // Extract text from PDF using pdfjs-dist directly (no worker needed server-side)
     const arrayBuffer = await file.arrayBuffer();
-    const parser = new PDFParse({ data: new Uint8Array(arrayBuffer) });
-    const textResult = await parser.getText();
-    const rawText = typeof textResult === "string" ? textResult : String(textResult);
+    const loadingTask = pdfjs.getDocument({
+      data: new Uint8Array(arrayBuffer),
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      useSystemFonts: true,
+    });
+    const pdf = await loadingTask.promise;
+    const textParts: string[] = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items
+        .filter((item: Record<string, unknown>) => "str" in item)
+        .map((item: Record<string, unknown>) => item.str as string)
+        .join(" ");
+      textParts.push(pageText);
+    }
+    const rawText = textParts.join("\n");
 
     if (!rawText || rawText.trim().length === 0) {
       return NextResponse.json({ error: "Could not extract text from PDF. The file may be image-based or empty." }, { status: 400 });
