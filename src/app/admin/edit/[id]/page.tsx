@@ -235,7 +235,7 @@ export default function EditSOPPage() {
           <h1 className="text-2xl font-bold text-[var(--text)]" style={{ fontFamily: 'var(--font-heading)' }}>{isNew ? "Create New SOP" : "Edit SOP"}</h1>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => router.push(backUrl)} className="bg-[var(--bg-card)] border border-[var(--border)] text-sm rounded-lg px-4 py-2.5 text-[var(--text)] hover:bg-[var(--bg-hover)] transition-colors">Cancel</button>
+          <button onClick={() => router.back()} className="bg-[var(--bg-card)] border border-[var(--border)] text-sm rounded-lg px-4 py-2.5 text-[var(--text)] hover:bg-[var(--bg-hover)] transition-colors">Cancel</button>
           <button onClick={handleSave} disabled={saving} className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-4 py-2.5 transition-colors">
             {saving ? "Saving..." : isNew ? "Create SOP" : "Save Changes"}
           </button>
@@ -402,7 +402,7 @@ export default function EditSOPPage() {
         )}
 
         <div className="flex justify-end gap-2 pt-4">
-          <button onClick={() => router.push(backUrl)} className="bg-[var(--bg-card)] border border-[var(--border)] text-sm rounded-lg px-6 py-2.5 text-[var(--text)] hover:bg-[var(--bg-hover)] transition-colors">Cancel</button>
+          <button onClick={() => router.back()} className="bg-[var(--bg-card)] border border-[var(--border)] text-sm rounded-lg px-6 py-2.5 text-[var(--text)] hover:bg-[var(--bg-hover)] transition-colors">Cancel</button>
           <button onClick={handleSave} disabled={saving} className="bg-[var(--primary)] hover:bg-[var(--primary-hover)] disabled:opacity-50 text-white font-medium text-sm rounded-lg px-6 py-2.5 transition-colors">
             {saving ? "Saving..." : isNew ? "Create SOP" : "Save Changes"}
           </button>

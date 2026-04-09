@@ -6,6 +6,11 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useToast } from "@/contexts/ToastContext";
+import dynamic from "next/dynamic";
+
+const SOPEditModal = dynamic(() => import("@/components/SOPEditModal"), {
+  ssr: false,
+});
 
 export default function SOPDetailPage() {
   const { getSOP, deleteSOP, isLoading } = useSOPs();
@@ -15,6 +20,7 @@ export default function SOPDetailPage() {
   const { toast } = useToast();
   const sop = getSOP(params.id as string);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [editing, setEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
@@ -131,6 +137,15 @@ export default function SOPDetailPage() {
 
   return (
     <>
+      {/* Edit Modal */}
+      {editing && (
+        <SOPEditModal
+          sopId={sop.id}
+          onClose={() => setEditing(false)}
+          onDelete={() => router.push("/sops")}
+        />
+      )}
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-6">
         <Link href="/sops" className="hover:text-[var(--primary)] transition-colors">SOPs</Link>
@@ -149,7 +164,7 @@ export default function SOPDetailPage() {
           {isSuperuser && (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => router.push(`/admin/edit/${sop.id}`)}
+                onClick={() => setEditing(true)}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-[var(--primary)] bg-[var(--primary-light)] hover:bg-[var(--primary-light)] rounded-lg transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
