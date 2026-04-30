@@ -197,7 +197,7 @@ function SOPListContent() {
         </div>
       )}
 
-      {/* Empty state — no SOPs at all in current scope */}
+      {/* Empty state — no SOPs in current scope */}
       {roleScopedSops.length === 0 && (
         <div className="text-center py-16">
           <svg className="w-16 h-16 mx-auto text-[var(--text-muted)] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
