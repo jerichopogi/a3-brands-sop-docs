@@ -4,22 +4,51 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSOPs } from "@/contexts/SOPContext";
 import Logo from "./Logo";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { ROLE_LABELS } from "@/lib/roles";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { NON_SUPERUSER_ROLES, ROLE_LABELS, type UserRole } from "@/lib/roles";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 
 export default function Sidebar() {
+  // useSearchParams (in SidebarContent) needs a Suspense boundary at build time.
+  return (
+    <Suspense>
+      <SidebarContent />
+    </Suspense>
+  );
+}
+
+function SidebarContent() {
   const { user, logout, isSuperuser } = useAuth();
   const { categories, sops, isLoading } = useSOPs();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { collapsed, setCollapsed } = useSidebar();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { resolvedTheme } = useTheme();
 
+  // Effective role used to filter the sidebar.
+  // - Non-SUPERUSER: their own role.
+  // - SUPERUSER: their own role unless they're previewing via ?as=ROLE on /sops.
+  const roleViewParam = searchParams?.get("as") ?? "";
+  const previewedRole: UserRole | null =
+    isSuperuser && (NON_SUPERUSER_ROLES as readonly string[]).includes(roleViewParam)
+      ? (roleViewParam as UserRole)
+      : null;
+  const effectiveRole = previewedRole ?? (user?.role ?? null);
+
+  // SUPERUSER without an ?as= preview sees everything (admin view).
+  // Everyone else sees only SOPs whose role_visibility includes their effective role.
+  const visibleSops =
+    isSuperuser && !previewedRole
+      ? sops
+      : effectiveRole
+        ? sops.filter((s) => s.role_visibility?.includes(effectiveRole))
+        : [];
+
   const sopsByCategory = (catName: string) =>
-    sops.filter((s) => s.category_name === catName);
+    visibleSops.filter((s) => s.category_name === catName);
 
   const isActive = (slug: string) => pathname === `/sops/${slug}`;
 
